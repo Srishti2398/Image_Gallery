@@ -1,4 +1,7 @@
+from io import StringIO
+from PIL.Image import Image
 from django.core import paginator
+from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
 from .models import Category, Photo
 
@@ -36,6 +39,22 @@ def viewphoto(request, pk):
     photo = Photo.objects.get(id=pk)
     return render(request, 'gallery/view.html', {'photo': photo})
 
+
+def rotateLeft(request,pk):
+    categories = Category.objects.all()
+    photo = Photo.objects.get(id=pk)
+
+    original_photo = StringIO.StringIO(Photo.file.read())
+    rotated_photo = StringIO.StringIO()
+
+    photos = Image.open(original_photo)
+    image = photos.rotate(-90)
+    image.save(rotated_photo, 'JPEG')
+
+    photo.file.save(image.file.path, ContentFile(rotated_photo.getvalue()))
+    photo.save()
+    context = {'categories': categories,  'photo': photo }
+    return render(request, 'gallery/home.html', context)
 
 
 def addphoto(request):

@@ -7,5 +7,7 @@ urlpatterns = [
 
      path('photo/<str:pk>/', views.viewphoto, name='photo'),
 
+     
+
      path('add/', views.addphoto, name='add'),
 ]
